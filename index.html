@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To Do List</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <form action="#">
+      <input type="text" id="inputCategory" placeholder="kategori giriniz" />
+      <button onclick="createCategory()" type="button" class="button">
+        ekle
+      </button>
+    </form>
+    <p id="categoryParagraph"></p>
+    <br />
+    <form>
+      <input type="text" name="" id="inputTask" placeholder="task giriniz" />
+      <input type="date" name="" id="startTaskDate" onchange="dateMinMax()" />
+      <input type="date" name="" id="endTaskDate" onchange="dateMinMax()" />
+      <button id="TaskButton" onclick="createTasks()" type="button">
+        Task Ekle
+      </button>
+    </form>
+    <div class="container-tasks">
+      <p id="taskParagraph"></p>
+      <div id="div-delete-button-tasks" class="contaner-tasks-button"></div>
+      <div id="div-update-button-tasks" class="contaner-tasks-button"></div>
+
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
