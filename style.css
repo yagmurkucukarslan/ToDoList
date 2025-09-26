@@ -1,4 +1,197 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+h3 {
+  color: #c0c0c0;
+}
+
 .button {
   width: 50px;
   height: 30px;
+}
+
+.sidebar {
+  background: #0e0e0e;
+  height: 100vh;
+  width: 200px;
+  padding: 20px;
+  position: fixed;
+}
+
+.content {
+  position: relative;
+  padding-left: 30%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.taskSearch{
+  margin-top: 20px;
+}
+
+.taskInput {
+  width: 100%;
+  max-width: 700px;
+  margin-bottom: 20px;
+}
+
+.input-wrapper {
+  display: flex;
+  width: 100%;
+  border: 1px solid black;
+  border-radius: 25px;
+  overflow: hidden;
+  align-items: center;
+  padding: 8px;
+}
+
+.div-input-task {
+  flex: 1;
+  padding: 10px 20px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+}
+
+.input-btn {
+  padding: 0 10px;
+  background-color: transparent;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  margin-right: 8px;
+}
+
+/* #table tr {
+  transition: 0.3 ease;
+}
+
+#table tr.completed {
+  background-color: #d4edda;
+  color: #555;
+} */
+
+.task-List {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1;
+  max-height: 400px;
+  width: 100%;
+  max-width: 700px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+#task-List::-webkit-scrollbar {
+  width: 6px;
+}
+
+#task-List::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 3px;
+}
+
+#task-List::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+.task-card {
+  display: flex;
+  width: 100%;
+  max-width: 600px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  margin: 10px;
+  border: 1px solid black;
+  border-radius: 12px;
+}
+
+.task-left {
+  display: flex;
+  align-items: center;
+}
+
+.task-text {
+  font-size: 16px;
+}
+
+.actions {
+  display: flex;
+  gap: 20px;
+}
+
+.task-actions button {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 18px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.btn-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.modal {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 23px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  min-width: 250px;
+  display: none;
+  z-index: 1;
+}
+
+.modal.open {
+  display: block;
+}
+
+.modal-inner {
+  background-color: #fff;
+  box-sizing: border-box;
+  border-radius: 5px;
+  padding: 15px 25px;
+  text-align: center;
+  width: 100%;
+}
+.modal-inner h2 {
+  margin: 0;
+}
+
+.modal-inner p {
+  line-height: 24px;
+  margin: 10px 0;
+}
+
+.taskInput,
+.input-wrapper,
+.btn-wrapper {
+  overflow: visible !important;
+}
+
+.updateDialog-Div {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  max-width: 300px;
+}
+
+.updateDialog {
+  height: 250px;
+  padding: 20px;
+  box-sizing: border-box;
 }

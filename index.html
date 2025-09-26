@@ -6,30 +6,85 @@
     <title>To Do List</title>
     <link rel="stylesheet" href="style.css" />
   </head>
-  <body>
-    <form action="#">
-      <input type="text" id="inputCategory" placeholder="kategori giriniz" />
-      <button onclick="createCategory()" type="button" class="button">
-        ekle
-      </button>
-    </form>
-    <p id="categoryParagraph"></p>
-    <br />
-    <form>
-      <input type="text" name="" id="inputTask" placeholder="task giriniz" />
-      <input type="date" name="" id="startTaskDate" onchange="dateMinMax()" />
-      <input type="date" name="" id="endTaskDate" onchange="dateMinMax()" />
-      <button id="TaskButton" onclick="createTasks()" type="button">
-        Task Ekle
-      </button>
-    </form>
-    <div class="container-tasks">
-      <p id="taskParagraph"></p>
-      <div id="div-delete-button-tasks" class="contaner-tasks-button"></div>
-      <div id="div-update-button-tasks" class="contaner-tasks-button"></div>
+  <body onload="fetchCategory()">
+    <div class="main-container">
+      <div class="sidebar">
+        <h3>Kategori</h3>
+        <form action="#">
+          <button onclick="createCategoryInput()" type="button" class="button">
+            +
+          </button>
+          <br />
+          <select name="" id="createCategorySelect"></select>
+          <button onclick="filterCategory()">Filtrele</button>
+        </form>
+        <div id="getUserCategoryDiv"></div>
+        <br />
+        <div id="getUserCategoryButtonDiv"></div>
+      </div>
+      <div class="content">
+        <div class="taskSearch">
+          <input
+            type="text"
+            name=""
+            id="searchTask"
+            placeholder="arayınız"
+            onkeyup="searchTask()"
+          />
+        </div>
+        <div class="task-List" id="task-List"></div>
+        <div class="taskInput">
+          <form action="#">
+            <div class="input-wrapper">
+              <div class="btn-wrapper">
+                <button type="button" class="input-btn" id="openModal">
+                  ➕
+                </button>
 
+                <div class="modal" id="modal">
+                  <div class="modal-inner">
+                    <h3>Tarih</h3>
+                    <input
+                      type="date"
+                      id="startTaskDate"
+                      onchange="dateMinMax()"
+                    />
+                    <input
+                      type="date"
+                      id="endTaskDate"
+                      onchange="dateMinMax()"
+                    />
+                    <button onclick="createTasks()">Kaydet</button>
+                  </div>
+                </div>
+              </div>
+              <input
+                type="text"
+                id="inputTask"
+                class="div-input-task"
+                placeholder="Task giriniz..."
+              />
+            </div>
+          </form>
+        </div>
+        <div class="updateDialog-Div">
+          <dialog id="updateDialog" class="updateDialog">
+            <h3>Tarih</h3>
+            <input type="text" name="" id="updateInput" />
+            <input
+              type="date"
+              id="updateStartTaskDate"
+              onchange="dateMinMax()"
+            />
+            <input type="date" id="updateEndTaskDate" onchange="dateMinMax()" />
+          </dialog>
+        </div>
+      </div>
     </div>
 
     <script src="app.js"></script>
   </body>
 </html>
+
+<!-- <button class="pin">📌</button>
+<button class="more">⋮</button> -->
