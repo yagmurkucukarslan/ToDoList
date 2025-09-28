@@ -1,3 +1,21 @@
+let categories = [];
+
+let selectedCategoryId;
+console.log(selectedCategoryId);
+let selectedCategoryName = "default";
+console.log(selectedCategoryName);
+
+const allTaskBtn = document
+  .getElementById("allTaskBtn")
+  .addEventListener("click", allTask);
+
+function allTask() {
+  selectedCategoryName = "default";
+  fallowCategories(selectedCategoryName);
+  let data = getTasks();
+  allData(data);
+}
+
 function getTasks() {
   let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
   return tasks;
@@ -30,7 +48,6 @@ function uniqueIdGenerator() {
 
 function uniqueIdChecker(uniqueId) {
   let tasks = getTasks();
-  let categories = [];
 
   const taskCheckResult = tasks.find((task) => task.id == uniqueId);
   const categoryCheckResult = categories.find(
@@ -48,27 +65,45 @@ function createTasks() {
   const inputTask = document.getElementById("inputTask");
   const startDateTime = document.getElementById("startTaskDate");
   const endDateTime = document.getElementById("endTaskDate");
-
+  const categorySelect = document.getElementById("selectedCategory");
   const inputTaskVal = inputTask.value;
   const isInputTask = inputValidation(inputTaskVal);
 
-  const category_id = userSelectCategory();
   const isDate = checkDateValueTask();
 
   if (isInputTask) {
     const taskId = uniqueIdGenerator();
+    const now = new Date();
+    const createdAt = now.toLocaleString("tr-TR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    let categoryValue = "";
+    if (selectedCategoryId) {
+      categoryValue = selectedCategoryId;
+    } else if (categorySelect && categorySelect.value !== "default") {
+      categoryValue = Number(categorySelect.value);
+    }
     const taskItem = {
       id: taskId,
-      categoryId: Number(category_id),
+      categoryId: categoryValue,
       taskName: inputTaskVal,
       startTaskTime: isDate ? startDateTime.value : "",
       endTaskTime: isDate ? endDateTime.value : "",
+      completed: false,
+      generationTime: createdAt,
     };
     inputTask.value = "";
     let tasks = getTasks();
-    tasks.push(taskItem);
+    tasks.unshift(taskItem);
     setTasks(tasks);
-    allData(tasks);
+
+    let filterData = tasks.filter((x) => x.categoryId == categoryValue);
+    allData(filterData);
+
     resetDate();
   } else {
     return;
@@ -107,8 +142,6 @@ function checkDateValue() {
 
 function updateTask(taskId) {
   const updateDialog = document.getElementById("updateDialog");
-  console.log(updateDialog);
-
   const updateInput = updateDialog.querySelector("#updateInput");
 
   const updateStartTaskDate = updateDialog.querySelector(
@@ -184,9 +217,9 @@ function dateMinMax() {
   }
 }
 
-/* function searchTask() {
-  const table = document.getElementById("table");
-  table.innerHTML = "";
+function searchTask() {
+  const list = document.getElementById("task-List");
+  list.innerHTML = "";
 
   const searchInput = document.getElementById("searchTask");
   const searchInputVal = searchInput.value;
@@ -195,8 +228,8 @@ function dateMinMax() {
   let filterData = data.filter((e) =>
     e.taskName.toLowerCase().includes(searchInputVal.toLowerCase())
   );
-  fetchData(filterData);
-} */
+  allData(filterData);
+}
 
 function sorting() {
   const selected = document.getElementById("sorting");
@@ -210,7 +243,25 @@ function sorting() {
     filterDate(selectedVal);
   } else if (selectedVal == "oldDateSorted") {
     filterDate(selectedVal);
+  } else if (selectedVal == "completed") {
+    completedSorted();
+  } else if (selectedVal == "unfinished") {
+    unfinishedSorted();
   } else return;
+}
+function unfinishedSorted() {
+  let allTasks = getTasks();
+
+  let unfinished = allTasks.filter((task) => task.completed === false);
+
+  allData(unfinished);
+}
+function completedSorted() {
+  let allTasks = getTasks();
+
+  let completedTasks = allTasks.filter((task) => task.completed === true);
+
+  allData(completedTasks);
 }
 
 function alphabetSorted(getSelectVal) {
@@ -219,11 +270,11 @@ function alphabetSorted(getSelectVal) {
   if (getSelectVal == "fromAtoZsorted") {
     let newData = data.sort((a, b) => a.taskName.localeCompare(b.taskName));
     setTasks(newData);
-    fetchData(newData);
+    allData(newData);
   } else if (getSelectVal == "fromZtoAsorted") {
     let newData = data.sort((a, b) => b.taskName.localeCompare(a.taskName));
     setTasks(newData);
-    fetchData(newData);
+    allData(newData);
   }
 }
 
@@ -263,6 +314,7 @@ function createCategoryInput() {
   UserCategoryDiv.appendChild(getUserCategory);
 
   const getUserCategoryButton = document.createElement("button");
+
   getUserCategoryButton.setAttribute("id", "userCategoryAppend");
   getUserCategoryButton.innerHTML = "Ekle";
   userCategoryButtonDiv.appendChild(getUserCategoryButton);
@@ -274,10 +326,6 @@ function createCategory() {
   const selectCategory = document.getElementById("createCategorySelect");
 
   const getUserInputVal = getUserInput.value;
-  selectCategory.innerHTML += `
-      <option value="${getUserInputVal}">${getUserInputVal}</option>
-  `;
-  let categories = [];
 
   const isInputValid = inputValidation(getUserInputVal);
 
@@ -298,36 +346,65 @@ function createCategory() {
 
 function fetchCategory() {
   const selectCategory = document.getElementById("createCategorySelect");
+  const selectCategoryTaskInput = document.getElementById("selectedCategory");
   selectCategory.innerHTML = "";
+  selectCategoryTaskInput.innerHTML = "";
   let data = getCategory();
   console.log(data);
-
+  selectCategoryTaskInput.innerHTML = ` 
+    <option value="default">Kategori Seçiniz</option>
+  `;
   data.forEach((element) => {
     selectCategory.innerHTML += `
-      <option value="${element.id}">${element.category_name}</option>
+    <div class="category-btn-wrapper"> 
+      <button id="btn_${element.id}" class="category-btn" onclick="filterCategory(${element.id},'${element.category_name}')">${element.category_name}</button>
+      <button class="delete-category-btn" onclick="deleteCategory(${element.id})">🗑️</button>
+    </div>
+    `;
+    selectCategoryTaskInput.innerHTML += `
+      <option value="${element.id}" id="${element.id}">${element.category_name}</option>
     `;
   });
-  const selectCategoryVal = selectCategory.value;
+}
+function deleteCategory(categoryId) {
+  let allCategory = getCategory();
+  let allTask = getTasks();
+  let remainingCategory = allCategory.filter(
+    (category) => category.id != categoryId
+  );
+  setCategory(remainingCategory);
 
-  console.log(selectCategoryVal);
+  const btnWrapper = document.getElementById(
+    `btn_${categoryId}`
+  )?.parentElement;
+  if (btnWrapper) btnWrapper.remove();
+  fetchCategory();
+  allData(allTask);
 }
 
-function userSelectCategory() {
-  const selectCategory = document.getElementById("createCategorySelect");
-  const selectCategoryVal = selectCategory.value;
-  return selectCategoryVal;
-}
-
-function filterCategory() {
-  const selectCategory = document.getElementById("createCategorySelect");
-  const selectCategoryVal = selectCategory.value;
-  console.log(selectCategoryVal);
-  console.log(typeof selectCategoryVal);
+function filterCategory(id, categoryName) {
   let data = getTasks();
-  let filterData = data.filter((x) => x.categoryId == selectCategoryVal);
-  console.log(selectCategoryVal);
-  console.log(filterData);
-  fetchData(filterData);
+  let filterData = data.filter((x) => x.categoryId == id);
+  selectedCategoryId = id;
+  selectedCategoryName = categoryName;
+  console.log(selectedCategoryName);
+  fallowCategories(selectedCategoryName);
+  setTasks(data);
+  allData(filterData);
+}
+
+function fallowCategories(selectedCategory) {
+  const categorySelect = document.getElementById("selectedCategory");
+  if (selectedCategory == "default") {
+    categorySelect.text = selectedCategory;
+    categorySelect.disabled = false;
+    categorySelect.style.display = "inline-block";
+  } else {
+    categorySelect.text = selectedCategory;
+    console.log(categorySelect.value);
+
+    categorySelect.disabled = true;
+  }
 }
 
 function filterDate(selectedVal) {
@@ -337,15 +414,15 @@ function filterDate(selectedVal) {
       a.endTaskTime.localeCompare(b.endTaskTime)
     );
     setTasks(newData);
-    fetchData(newData);
+    allData(newData);
   } else if (selectedVal == "newDateSorted") {
     let newData = data.sort((a, b) =>
       b.endTaskTime.localeCompare(a.endTaskTime)
     );
     setTasks(newData);
-    fetchData(newData);
+    allData(newData);
   } else {
-    fetchData(data);
+    allData(data);
   }
 }
 
@@ -363,27 +440,6 @@ window.addEventListener("DOMContentLoaded", () => {
   allData(tasks);
 });
 
-/* function fetchData(task) {
-  const table = document.getElementById("table");
-  table.innerHTML = "";
-
-  let data = task || getTasks();
-  data.forEach((element) => {
-    table.innerHTML += `
-      <tr> 
-        <td><input type="text" name="" id="taskName_${element.id}" value="${element.taskName}"></td>
-        <td></td>
-        <td></td>
-        <td><button id="${element.id}_${element.startTaskTime}" onclick="removeTask(${element.id})" type="button">Sil</td>
-        <td><button id="${element.id}_${element.endTaskTime}" type="button" onclick="updateTask(${element.id})">Güncelle</td>
-        <td><div id="iconDiv_${element.id}"></div></td>
-        <td><input type="checkbox" name="" id="checkbox_${element.id}" onclick="isCheckBoxChecked(${element.id})"></td>
-      </tr>
-    `;
-  });
-  checkTaskDate();
-} */
-
 function allData(task) {
   const tasks = document.getElementById("task-List");
   tasks.innerHTML = "";
@@ -392,15 +448,24 @@ function allData(task) {
   data.forEach((element) => {
     tasks.innerHTML += `
       <div class="task-card">
-        <div class="task-left"><input type="checkbox"></div>
+        <div class="task-left"><input type="checkbox" id="checkbox_${
+          element.id
+        }" onclick="isCheckBoxChecked(${element.id})" ${
+      element.completed ? "checked" : ""
+    }></div>
+        <div class="card-icon"><div id="iconDiv_${element.id}"></div></div>
         <div class="task-text">${element.taskName}</div>
         <div>${element.startTaskTime}</div>
+        <div>${element.endTaskTime}</div>
         <div class="task-actions">
-          <button class="updateBtn" id="updateBtn" onclick="updateTask(${element.id})">✏️</button>
-          <button style="color: red;" class="deleteBtn" onclick="removeTask(${element.id})">✖</button>
+          <button class="updateBtn" id="updateBtn" onclick="updateTask(${
+            element.id
+          })">✏️</button>
+          <button style="color: red;" class="deleteBtn" onclick="removeTask(${
+            element.id
+          })">✖</button>
         </div>
       </div>
-
     `;
   });
   checkTaskDate();
@@ -408,15 +473,21 @@ function allData(task) {
 
 function isCheckBoxChecked(id) {
   const checkBox = document.getElementById(`checkbox_${id}`);
-  const table = document.getElementById("table");
+  let data = getTasks();
+  let findDataCompleted = data.find((x) => x.id === id);
 
-  const row = checkBox.closest("tr");
+  console.log(findDataCompleted);
+
   if (checkBox.checked === true) {
-    table.appendChild(row);
-    row.classList.add("completed");
+    findDataCompleted.completed = !findDataCompleted.completed;
+    data.sort((a, b) => a.completed - b.completed);
+    setTasks(data);
+    allData(data);
   } else {
-    table.insertBefore(row, table.firstChild);
-    row.classList.remove("completed");
+    findDataCompleted.completed = !findDataCompleted.completed;
+    data.sort((a, b) => a.completed - b.completed);
+    setTasks(data);
+    allData(data);
   }
 }
 
@@ -425,4 +496,29 @@ const modal = document.getElementById("modal");
 
 openBtn.addEventListener("click", () => {
   modal.classList.toggle("open");
+});
+
+function showCategories() {
+  const hiddenCategory = document.getElementById("category-add");
+  hiddenCategory.hidden = !hiddenCategory.hidden;
+}
+
+document.addEventListener("keydown", function (event) {
+  const updateDialog = document.getElementById("updateDialog");
+
+  if (event.key == "Escape") {
+    event.preventDefault();
+    modal.classList.remove("open");
+    updateDialog.close();
+  }
+});
+
+const sidebar = document.querySelector(".sidebar");
+const sidebarToggleBtn = document.createElement("button");
+sidebarToggleBtn.id = "sidebarToggleBtn";
+sidebarToggleBtn.innerText = "☰";
+document.body.appendChild(sidebarToggleBtn);
+
+sidebarToggleBtn.addEventListener("click", () => {
+  sidebar.classList.toggle("open");
 });

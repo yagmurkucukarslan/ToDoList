@@ -9,17 +9,29 @@
   <body onload="fetchCategory()">
     <div class="main-container">
       <div class="sidebar">
-        <h3>Kategori</h3>
-        <form action="#">
-          <button onclick="createCategoryInput()" type="button" class="button">
-            +
-          </button>
-          <br />
-          <select name="" id="createCategorySelect"></select>
-          <button onclick="filterCategory()">Filtrele</button>
-        </form>
-        <div id="getUserCategoryDiv"></div>
+        <div class="allTask">
+          <button id="allTaskBtn" class="allTaskBtnDiv">Bütün Görevler</button>
+        </div>
         <br />
+        <div class="sidebar-category-header">
+          <h3>Kategoriler</h3>
+          <button id="sidebar-category-button" onclick="showCategories()">
+            ⏬
+          </button>
+        </div>
+        <div class="category-add" id="category-add">
+          <form action="#">
+            <button onclick="createCategoryInput()" class="button">+</button>
+            <br />
+            <div
+              name=""
+              id="createCategorySelect"
+              class="createCategorySelect"
+            ></div>
+          </form>
+        </div>
+
+        <div id="getUserCategoryDiv"></div>
         <div id="getUserCategoryButtonDiv"></div>
       </div>
       <div class="content">
@@ -31,6 +43,15 @@
             placeholder="arayınız"
             onkeyup="searchTask()"
           />
+          <select name="" id="sorting" onchange="sorting()">
+            <option value="">Seçiniz</option>
+            <option value="fromAtoZsorted">A dan Z ye</option>
+            <option value="fromZtoAsorted">Z den A ya</option>
+            <option value="oldDateSorted">Eski Tarihe Göre</option>
+            <option value="newDateSorted">Yeni Tarihe Göre</option>
+            <option value="completed">Tamamlanan Görevler</option>
+            <option value="unfinished">Tamamlanmayan Görevler</option>
+          </select>
         </div>
         <div class="task-List" id="task-List"></div>
         <div class="taskInput">
@@ -40,7 +61,6 @@
                 <button type="button" class="input-btn" id="openModal">
                   ➕
                 </button>
-
                 <div class="modal" id="modal">
                   <div class="modal-inner">
                     <h3>Tarih</h3>
@@ -54,6 +74,7 @@
                       id="endTaskDate"
                       onchange="dateMinMax()"
                     />
+                    <select name="" id="selectedCategory"></select>
                     <button onclick="createTasks()">Kaydet</button>
                   </div>
                 </div>
@@ -85,6 +106,3 @@
     <script src="app.js"></script>
   </body>
 </html>
-
-<!-- <button class="pin">📌</button>
-<button class="more">⋮</button> -->
